@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTB Blogs - ¿Qué piensa la comunidad acerca de Netflix?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --dark-blue: #0a1f3d;
+            --pastel-blue: #a7c7e7;
+            --pastel-pink: #f8c8dc;
+            --pastel-green: #c1e1c1;
+            --pastel-yellow: #fdfd96;
+            --pastel-purple: #d8bfd8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+            background-image: linear-gradient(135deg, var(--pastel-blue), var(--pastel-pink), var(--pastel-green));
+            background-attachment: fixed;
+        }
+        
+        .header {
+            background-color: var(--dark-blue);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+            font-size: 2.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1608889825103-eb5b37773147?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            padding: 0 1rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 3px solid var(--dark-blue);
+            padding-bottom: 0.5rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+            margin: 1.5rem 0;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--dark-blue);
+            color: white;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            background-color: var(--dark-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .filter-btn:hover {
+            background-color: #0d2b57;
+        }
+        
+        .filter-btn.active {
+            background-color: #1a4b9b;
+        }
+        
+        .comments-section {
+            margin-top: 2rem;
+        }
+        
+        .comment {
+            background-color: white;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comment.positive {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .comment.negative {
+            border-left: 4px solid #F44336;
+        }
+        
+        .comment.neutral {
+            border-left: 4px solid #FFC107;
+        }
+        
+        .footer {
+            background-color: var(--dark-blue);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 1rem 0;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+        
+        .social-links a:hover {
+            color: var(--pastel-blue);
+        }
+        
+        .intro-text {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        UTB BLOGS
+    </header>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>¿QUÉ PIENSA LA COMUNIDAD ACERCA DE NETFLIX?</h1>
+            <p>Un análisis exhaustivo basado en encuestas de satisfacción</p>
+        </div>
+    </section>
+    
+    <div class="container">
+        <section class="section">
+            <h2 class="section-title">INTRODUCCIÓN</h2>
+            <div class="intro-text">
+                <p>En este análisis, exploramos las opiniones de la comunidad sobre la plataforma de streaming Netflix. Basándonos en datos recopilados de encuestas recientes, examinamos los programas más populares, la percepción sobre los planes de suscripción, la calidad de producción y el nivel general de satisfacción de los usuarios.</p>
+                <p>Nuestro objetivo es proporcionar una visión clara y detallada que ayude tanto a los consumidores como a la plataforma a entender las preferencias y áreas de oportunidad.</p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">TOP 3 SERIES MÁS POPULARES</h2>
+            <div class="chart-container">
+                <canvas id="topSeriesChart"></canvas>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serie</th>
+                            <th>Número de menciones</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Breaking Bad</td>
+                            <td>7</td>
+                            <td>14%</td>
+                        </tr>
+                        <tr>
+                            <td>Stranger Things</td>
+                            <td>6</td>
+                            <td>12%</td>
+                        </tr>
+                        <tr>
+                            <td>La casa de papel</td>
+                            <td>4</td>
+                            <td>8%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>Breaking Bad lidera como la serie favorita con un 14% de las menciones, seguida de cerca por Stranger Things con 12%. La casa de papel completa el podio con un 8% de preferencia.</p>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">OPINIÓN SOBRE LOS PLANES DE SUSCRIPCIÓN</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterSubscriptionChart('all')">Todos</button>
+                <button class="filter-btn" onclick="filterSubscriptionChart('male')">Hombres</button>
+                <button class="filter-btn" onclick="filterSubscriptionChart('female')">Mujeres</button>
+                <button class="filter-btn" onclick="filterSubscriptionChart('young')">Jóvenes (≤25)</button>
+                <button class="filter-btn" onclick="filterSubscriptionChart('adult')">Adultos (>25)</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="subscriptionChart"></canvas>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Opinión</th>
+                            <th>Cantidad</th>
+                            <th>Ejemplos de comentarios</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Positivos (Buenos, Accesibles, Excelente)</td>
+                            <td>22</td>
+                            <td>"Bien", "Accesibles", "Excelente servicio"</td>
+                        </tr>
+                        <tr>
+                            <td>Neutrales (Regulares, Normales, Bien)</td>
+                            <td>12</td>
+                            <td>"Regular", "Normal", "Bien"</td>
+                        </tr>
+                        <tr>
+                            <td>Negativos (Caros, Elevados, Costosos)</td>
+                            <td>16</td>
+                            <td>"Caros", "Muy costosos", "Un poco elevados"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>Las opiniones sobre los planes de suscripción están divididas: 44% positivas, 24% neutrales y 32% negativas. Los comentarios negativos principalmente mencionan los precios elevados, mientras que los positivos destacan la accesibilidad y variedad de opciones.</p>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">CALIDAD DE PRODUCCIÓN DE NETFLIX</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterQualityChart('all')">Todos</button>
+                <button class="filter-btn" onclick="filterQualityChart('male')">Hombres</button>
+                <button class="filter-btn" onclick="filterQualityChart('female')">Mujeres</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="qualityChart"></canvas>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Calificación</th>
+                            <th>Cantidad</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Excelente/Buena</td>
+                            <td>32</td>
+                            <td>64%</td>
+                        </tr>
+                        <tr>
+                            <td>Regular/Media</td>
+                            <td>12</td>
+                            <td>24%</td>
+                        </tr>
+                        <tr>
+                            <td>Mala/Pobre</td>
+                            <td>6</td>
+                            <td>12%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>La mayoría de los encuestados (64%) califican la calidad de producción como buena o excelente, aunque un 24% la considera regular y un 12% la califica como mala. Algunos comentarios mencionan inconsistencia en la calidad entre diferentes producciones.</p>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">SATISFACCIÓN GENERAL CON NETFLIX</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterSatisfactionChart('all')">Todos</button>
+                <button class="filter-btn" onclick="filterSatisfactionChart('male')">Hombres</button>
+                <button class="filter-btn" onclick="filterSatisfactionChart('female')">Mujeres</button>
+                <button class="filter-btn" onclick="filterSatisfactionChart('netflix')">Usuarios Netflix</button>
+                <button class="filter-btn" onclick="filterSatisfactionChart('other')">Otras plataformas</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="satisfactionChart"></canvas>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nivel de satisfacción</th>
+                            <th>Cantidad</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Muy satisfecho (8-10/10)</td>
+                            <td>28</td>
+                            <td>56%</td>
+                        </tr>
+                        <tr>
+                            <td>Satisfecho (6-7/10)</td>
+                            <td>12</td>
+                            <td>24%</td>
+                        </tr>
+                        <tr>
+                            <td>Poco satisfecho (≤5/10)</td>
+                            <td>10</td>
+                            <td>20%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>El 56% de los encuestados se declara "Muy satisfecho" con Netflix, mientras que un 24% está "Satisfecho" y un 20% "Poco satisfecho". Los comentarios positivos destacan la variedad de contenido, mientras que los negativos mencionan repetición de temas y cancelación de buenas series.</p>
+        </section>
+        
+        <section class="section">
+            <h2 class="section-title">COMENTARIOS DE LOS USUARIOS</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterComments('all')">Todos</button>
+                <button class="filter-btn" onclick="filterComments('positive')">Positivos</button>
+                <button class="filter-btn" onclick="filterComments('negative')">Negativos</button>
+                <button class="filter-btn" onclick="filterComments('neutral')">Neutrales</button>
+            </div>
+            <div class="comments-section" id="commentsContainer">
+                <!-- Los comentarios se cargarán aquí mediante JavaScript -->
+            </div>
+        </section>
+    </div>
+    
+    <footer class="footer">
+        <div class="container">
+            <h3>UTB BLOGS</h3>
+            <p>Análisis de datos y tendencias en plataformas de streaming</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p>&copy; 2023 UTB Blogs. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+    
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Datos para las gráficas
+        const topSeriesData = {
+            labels: ['Breaking Bad', 'Stranger Things', 'La casa de papel'],
+            datasets: [{
+                data: [7, 6, 4],
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }]
+        };
+        
+        const subscriptionData = {
+            all: {
+                labels: ['Positivos', 'Neutrales', 'Negativos'],
+                data: [22, 12, 16],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            male: {
+                labels: ['Positivos', 'Neutrales', 'Negativos'],
+                data: [12, 7, 9],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            female: {
+                labels: ['Positivos', 'Neutrales', 'Negativos'],
+                data: [10, 5, 7],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            young: {
+                labels: ['Positivos', 'Neutrales', 'Negativos'],
+                data: [15, 8, 10],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            adult: {
+                labels: ['Positivos', 'Neutrales', 'Negativos'],
+                data: [7, 4, 6],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            }
+        };
+        
+        const qualityData = {
+            all: {
+                labels: ['Excelente/Buena', 'Regular/Media', 'Mala/Pobre'],
+                data: [32, 12, 6],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            male: {
+                labels: ['Excelente/Buena', 'Regular/Media', 'Mala/Pobre'],
+                data: [16, 7, 4],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            female: {
+                labels: ['Excelente/Buena', 'Regular/Media', 'Mala/Pobre'],
+                data: [16, 5, 2],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            }
+        };
+        
+        const satisfactionData = {
+            all: {
+                labels: ['Muy satisfecho', 'Satisfecho', 'Poco satisfecho'],
+                data: [28, 12, 10],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            male: {
+                labels: ['Muy satisfecho', 'Satisfecho', 'Poco satisfecho'],
+                data: [15, 6, 5],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            female: {
+                labels: ['Muy satisfecho', 'Satisfecho', 'Poco satisfecho'],
+                data: [13, 6, 5],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            netflix: {
+                labels: ['Muy satisfecho', 'Satisfecho', 'Poco satisfecho'],
+                data: [25, 10, 8],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            },
+            other: {
+                labels: ['Muy satisfecho', 'Satisfecho', 'Poco satisfecho'],
+                data: [3, 2, 2],
+                colors: ['#4e73df', '#f6c23e', '#e74a3b']
+            }
+        };
+        
+        // Comentarios de usuarios
+        const userComments = [
+            {
+                text: "Excelente servicio, buena relación calidad-precio y contenido variado.",
+                sentiment: "positive",
+                platform: "Netflix"
+            },
+            {
+                text: "Los planes son muy costosos comparados con otras plataformas.",
+                sentiment: "negative",
+                platform: "Netflix"
+            },
+            {
+                text: "La calidad de producción es buena, pero algunas series son repetitivas.",
+                sentiment: "neutral",
+                platform: "Netflix"
+            },
+            {
+                text: "Muy satisfecho con Netflix, tiene el mejor catálogo de series.",
+                sentiment: "positive",
+                platform: "Netflix"
+            },
+            {
+                text: "Mal, hay pura serie de geis y la calidad ha bajado mucho.",
+                sentiment: "negative",
+                platform: "Netflix"
+            },
+            {
+                text: "Los precios son accesibles pero podrían mejorar la calidad del contenido.",
+                sentiment: "neutral",
+                platform: "Netflix"
+            },
+            {
+                text: "10/10, la mejor plataforma de streaming sin duda.",
+                sentiment: "positive",
+                platform: "Netflix"
+            },
+            {
+                text: "Últimamente han aumentado los precios y no aceptan cuentas compartidas.",
+                sentiment: "negative",
+                platform: "Netflix"
+            },
+            {
+                text: "La calidad varía mucho, a veces es buena y a veces una porquería.",
+                sentiment: "neutral",
+                platform: "Netflix"
+            },
+            {
+                text: "Fascinado con la plataforma, cumple todas mis expectativas.",
+                sentiment: "positive",
+                platform: "Netflix"
+            },
+            {
+                text: "Totalmente insatisfecho, tienen mala calidad y pocas series buenas.",
+                sentiment: "negative",
+                platform: "HBO max"
+            },
+            {
+                text: "Estoy satisfecho, aunque hay cosas que podrían mejorar como los subtítulos.",
+                sentiment: "neutral",
+                platform: "Netflix"
+            },
+            {
+                text: "Al 100% satisfecha, contenido espectacular.",
+                sentiment: "positive",
+                platform: "Netflix"
+            },
+            {
+                text: "No estoy tan satisfecho, por eso estoy probando otras plataformas como HBO.",
+                sentiment: "negative",
+                platform: "HBO max"
+            },
+            {
+                text: "7/10, a veces el contenido puede ser repetitivo.",
+                sentiment: "neutral",
+                platform: "Netflix"
+            }
+        ];
+        
+        // Inicializar gráficas
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gráfica de series más populares
+            const topSeriesCtx = document.getElementById('topSeriesChart').getContext('2d');
+            new Chart(topSeriesCtx, {
+                type: 'bar',
+                data: topSeriesData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.raw} menciones (${Math.round(context.raw/50*100)}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfica de opinión sobre suscripciones
+            const subscriptionCtx = document.getElementById('subscriptionChart').getContext('2d');
+            window.subscriptionChart = new Chart(subscriptionCtx, {
+                type: 'pie',
+                data: {
+                    labels: subscriptionData.all.labels,
+                    datasets: [{
+                        data: subscriptionData.all.data,
+                        backgroundColor: subscriptionData.all.colors,
+                        hoverBackgroundColor: ['#2e59d9', '#dda20a', '#be2617'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.raw;
+                                    const percentage = Math.round(value / total * 100);
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfica de calidad de producción
+            const qualityCtx = document.getElementById('qualityChart').getContext('2d');
+            window.qualityChart = new Chart(qualityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: qualityData.all.labels,
+                    datasets: [{
+                        data: qualityData.all.data,
+                        backgroundColor: qualityData.all.colors,
+                        hoverBackgroundColor: ['#2e59d9', '#dda20a', '#be2617'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.raw;
+                                    const percentage = Math.round(value / total * 100);
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfica de satisfacción general
+            const satisfactionCtx = document.getElementById('satisfactionChart').getContext('2d');
+            window.satisfactionChart = new Chart(satisfactionCtx, {
+                type: 'pie',
+                data: {
+                    labels: satisfactionData.all.labels,
+                    datasets: [{
+                        data: satisfactionData.all.data,
+                        backgroundColor: satisfactionData.all.colors,
+                        hoverBackgroundColor: ['#2e59d9', '#dda20a', '#be2617'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.raw;
+                                    const percentage = Math.round(value / total * 100);
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Cargar comentarios iniciales
+            filterComments('all');
+            
+            // Efectos de scroll
+            const sections = document.querySelectorAll('.section');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            sections.forEach(section => {
+                section.style.opacity = 0;
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(section);
+            });
+        });
+        
+        // Funciones de filtrado
+        function filterSubscriptionChart(filter) {
+            const buttons = document.querySelectorAll('.filter-buttons button');
+            buttons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(filter) || (filter === 'all' && btn.textContent === 'Todos')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            window.subscriptionChart.data.labels = subscriptionData[filter].labels;
+            window.subscriptionChart.data.datasets[0].data = subscriptionData[filter].data;
+            window.subscriptionChart.data.datasets[0].backgroundColor = subscriptionData[filter].colors;
+            window.subscriptionChart.update();
+        }
+        
+        function filterQualityChart(filter) {
+            const buttons = document.querySelectorAll('.filter-buttons button');
+            buttons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(filter) || (filter === 'all' && btn.textContent === 'Todos')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            window.qualityChart.data.labels = qualityData[filter].labels;
+            window.qualityChart.data.datasets[0].data = qualityData[filter].data;
+            window.qualityChart.data.datasets[0].backgroundColor = qualityData[filter].colors;
+            window.qualityChart.update();
+        }
+        
+        function filterSatisfactionChart(filter) {
+            const buttons = document.querySelectorAll('.filter-buttons button');
+            buttons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(filter) || 
+                   (filter === 'all' && btn.textContent === 'Todos') ||
+                   (filter === 'netflix' && btn.textContent === 'Usuarios Netflix') ||
+                   (filter === 'other' && btn.textContent === 'Otras plataformas')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            window.satisfactionChart.data.labels = satisfactionData[filter].labels;
+            window.satisfactionChart.data.datasets[0].data = satisfactionData[filter].data;
+            window.satisfactionChart.data.datasets[0].backgroundColor = satisfactionData[filter].colors;
+            window.satisfactionChart.update();
+        }
+        
+        function filterComments(filter) {
+            const buttons = document.querySelectorAll('.filter-buttons button');
+            buttons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(filter) || (filter === 'all' && btn.textContent === 'Todos')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            const container = document.getElementById('commentsContainer');
+            container.innerHTML = '';
+            
+            let filteredComments = [];
+            if (filter === 'all') {
+                filteredComments = userComments;
+            } else {
+                filteredComments = userComments.filter(comment => comment.sentiment === filter);
+            }
+            
+            if (filteredComments.length === 0) {
+                container.innerHTML = '<p>No hay comentarios con este filtro.</p>';
+                return;
+            }
+            
+            filteredComments.forEach(comment => {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = `comment ${comment.sentiment}`;
+                commentDiv.innerHTML = `
+                    <p><strong>Plataforma:</strong> ${comment.platform}</p>
+                    <p>${comment.text}</p>
+                `;
+                container.appendChild(commentDiv);
+            });
+        }
+    </script>
+</body>
+</html>
